@@ -1,0 +1,54 @@
+import { Component, ElementRef, OnInit } from '@angular/core';
+import { PeopleService } from '../core/services/impl/people.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { AnimationController, InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
+import { Paginated } from '../core/models/paginated/paginated.model';
+import { Person } from '../core/models/person/person.model';
+import { PersonModalComponent } from '../components/person-modal/person-modal.component';
+
+@Component({
+  selector: 'app-personas',
+  templateUrl: 'personas.page.html',
+  styleUrls: ['personas.page.scss'],
+})
+export class PersonasPage implements OnInit{
+  _people:BehaviorSubject<Person[]> = new BehaviorSubject<Person[]>([]);
+  people$:Observable<Person[]> = this._people.asObservable();
+
+  constructor(
+    private peopleSv:PeopleService,
+    private modalCtrl:ModalController
+  ) {}
+
+  ngOnInit(): void {
+    this.getMorePeople();
+  }
+
+  page:number = 1;
+  pageSize:number = 25;
+
+  getMorePeople(notify:HTMLIonInfiniteScrollElement | null = null) {
+    this.peopleSv.getAll(this.page, this.pageSize).subscribe({
+      next:(response:Paginated<Person>)=>{
+        this._people.next([...this._people.value, ...response.data]);
+        this.page++;
+        notify?.complete();
+      }
+    });
+  }
+
+  onIonInfinite(ev:InfiniteScrollCustomEvent) {
+    this.getMorePeople(ev.target);
+  }
+
+  async onAddPerson() {
+    const modal = await this.modalCtrl.create({
+      component: PersonModalComponent,
+      componentProps:{}
+    })
+    modal.onDidDismiss().then((res:any)=>
+      console.log(res)
+    )
+    await modal.present()
+  }
+}
