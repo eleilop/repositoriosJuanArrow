@@ -4,21 +4,25 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
   },
   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
-  },  {
-    path: 'personas',
-    loadChildren: () => import('./personas/personas.module').then( m => m.PersonasPageModule)
   },
   {
-    path: 'grupos',
-    loadChildren: () => import('./grupos/grupos.module').then( m => m.GruposPageModule)
+    path: 'about',
+    loadChildren: () => import('./pages/about/about.module').then( m => m.AboutPageModule)
   },
-
+  {
+    path: 'groups',
+    loadChildren: () => import('./pages/groups/groups.module').then( m => m.GroupsPageModule)
+  },
+  {
+    path: 'people',
+    loadChildren: () => import('./pages/people/people.module').then( m => m.PeoplePageModule)
+  },
 ];
 
 @NgModule({
